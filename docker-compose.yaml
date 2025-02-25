@@ -1,45 +1,80 @@
 version: '3.8'
-
+networks:
+  clickhouse_net:
+    driver: bridge
 services:
-  zookeeper:
+  zookeeper1:
     image: zookeeper:3.6
+    hostname: zookeeper1
+    networks:
+      - clickhouse_net
     ports:
       - "2181:2181"
-
+    volumes:
+      - ./zk-data/zk1:/data
+      - ./zk-data/zk1/logs:/datalog
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181
+    restart: always
+  zookeeper2:
+    image: zookeeper:3.6
+    hostname: zookeeper2
+    networks:
+      - clickhouse_net
+    ports:
+      - "2182:2181"
+    volumes:
+      - ./zk-data/zk2:/data
+      - ./zk-data/zk2/logs:/datalog
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181
+    restart: always
   node1:
     image: clickhouse/clickhouse-server:23.3.19
+    hostname: node1
+    networks:
+      - clickhouse_net
     volumes:
       - ./config/config-node1.xml:/etc/clickhouse-server/config.d/config.xml
+      - ./clickhouse-logs/node1:/var/log/clickhouse-server  # <-- Added logs directory
     environment:
       CLICKHOUSE_DB: dbre
     ports:
       - "9000:9000"
       - "8123:8123"
     depends_on:
-      - zookeeper
-
+      - zookeeper1
+      - zookeeper2
   node2:
     image: clickhouse/clickhouse-server:23.3.19
+    hostname: node2
+    networks:
+      - clickhouse_net
     volumes:
       - ./config/config-node2.xml:/etc/clickhouse-server/config.d/config.xml
+      - ./clickhouse-logs/node2:/var/log/clickhouse-server  # <-- Added logs directory
     environment:
       CLICKHOUSE_DB: dbre
     ports:
       - "9001:9000"
       - "8124:8123"
     depends_on:
-      - zookeeper
-
+      - zookeeper1
+      - zookeeper2
   flyway:
     image: flyway/flyway
+    hostname: flyway
+    networks:
+      - clickhouse_net
     command: >
-      -url=jdbc:clickhouse://localhost:8123/dbre
+      -url=jdbc:clickhouse://node1:8123/dbre
       -driver=com.clickhouse.jdbc.ClickHouseDriver
       -connectRetries=60
-      -clickhouse.clusterName="my_cluster"
-      -clickhouse.zookeeperPath="/clickhouse/tables/{shard}/{database}/{table}"
       migrate
     volumes:
       - ./sql/:/flyway/sql
       - ./drivers/clickhouse-jdbc-0.4.6-all.jar:/flyway/drivers/clickhouse-jdbc-0.4.6-all.jar
-    network_mode: host
+    depends_on:
+      - node1
