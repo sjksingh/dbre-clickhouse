@@ -1,0 +1,42 @@
+<yandex>
+    <logger>
+        <level>trace</level>
+        <console>true</console>
+    </logger>
+
+    <zookeeper>
+        <node>
+            <host>zookeeper</host>
+            <port>2181</port>
+        </node>
+    </zookeeper>
+
+    <remote_servers>
+        <my_cluster>
+            <shard>
+                <replica>
+                    <host>node1</host>
+                    <port>9000</port>
+                </replica>
+                <replica>
+                    <host>node2</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </my_cluster>
+    </remote_servers>
+
+    <!-- Add macros for node1 -->
+    <macros>
+        <cluster>my_cluster</cluster>
+        <shard>1</shard>
+        <replica>node1</replica>
+</macros>
+
+<!-- Performance Settings -->
+    <max_connections>50</max_connections>
+    <keep_alive_timeout>3</keep_alive_timeout>
+    <max_concurrent_queries>100</max_concurrent_queries>
+    <uncompressed_cache_size>2589934592</uncompressed_cache_size>
+    <mark_cache_size>1368709120</mark_cache_size>
+</yandex>
