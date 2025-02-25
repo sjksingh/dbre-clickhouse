@@ -45,10 +45,10 @@ This repository contains configuration files and scripts to set up a ClickHouse 
 4. Connect to the ClickHouse cluster:
    ```bash
    # Connect to node1
-   clickhouse-client --host=localhost --port=9000
+   docker exec -it node1-1 clickhouse-client --host node1 --port 9000
    
    # Connect to node2
-   clickhouse-client --host=localhost --port=9001
+   docker exec -it node2-1 clickhouse-client --host node2 --port 9000
    ```
 
 ## Configuration
