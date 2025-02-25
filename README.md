@@ -57,10 +57,10 @@ The cluster is configured with:
 - Two ClickHouse nodes (node1, node2) forming a single shard with replication
 - ZooKeeper for coordination
 - Performance optimizations:
-  - 4096 max connections
+  - 50 max connections
   - 100 max concurrent queries
-  - 8GB uncompressed cache
-  - 5GB mark cache
+  - 2GB uncompressed cache
+  - 1GB mark cache
 
 ## Database Migrations
 
