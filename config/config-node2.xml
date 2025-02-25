@@ -4,12 +4,16 @@
         <console>true</console>
     </logger>
 
-    <zookeeper>
-        <node>
-            <host>zookeeper</host>
-            <port>2181</port>
-        </node>
-    </zookeeper>
+<zookeeper>
+    <node index="1">
+        <host>zookeeper1</host>
+        <port>2181</port>
+    </node>
+    <node index="2">
+        <host>zookeeper2</host>
+        <port>2181</port>
+    </node>
+</zookeeper>
 
     <remote_servers>
         <my_cluster>
