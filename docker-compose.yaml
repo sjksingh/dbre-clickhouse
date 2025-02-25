@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: zookeeper:3.6
+    ports:
+      - "2181:2181"
+
+  node1:
+    image: clickhouse/clickhouse-server:23.3.19
+    volumes:
+      - ./config/config-node1.xml:/etc/clickhouse-server/config.d/config.xml
+    environment:
+      CLICKHOUSE_DB: dbre
+    ports:
+      - "9000:9000"
+      - "8123:8123"
+    depends_on:
+      - zookeeper
+
+  node2:
+    image: clickhouse/clickhouse-server:23.3.19
+    volumes:
+      - ./config/config-node2.xml:/etc/clickhouse-server/config.d/config.xml
+    environment:
+      CLICKHOUSE_DB: dbre
+    ports:
+      - "9001:9000"
+      - "8124:8123"
+    depends_on:
+      - zookeeper
+
+  flyway:
+    image: flyway/flyway
+    command: >
+      -url=jdbc:clickhouse://localhost:8123/dbre
+      -driver=com.clickhouse.jdbc.ClickHouseDriver
+      -connectRetries=60
+      -clickhouse.clusterName="my_cluster"
+      -clickhouse.zookeeperPath="/clickhouse/tables/{shard}/{database}/{table}"
+      migrate
+    volumes:
+      - ./sql/:/flyway/sql
+      - ./drivers/clickhouse-jdbc-0.4.6-all.jar:/flyway/drivers/clickhouse-jdbc-0.4.6-all.jar
+    network_mode: host
