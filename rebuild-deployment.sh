@@ -22,7 +22,7 @@ docker-compose up -d zookeeper1 zookeeper2
 # Wait for ZooKeeper to be ready
 echo "Waiting for ZooKeeper to be ready..."
 for i in {1..10}; do
-    if docker exec dpenn-zookeeper1-1 zkServer.sh status | grep -q "Mode: standalone"; then
+    if docker exec dbre-clickhouse-zookeeper1-1 zkServer.sh status | grep -q "Mode: standalone"; then
         echo "✅ ZooKeeper is ready!"
         break
     fi
