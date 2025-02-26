@@ -39,6 +39,7 @@ services:
     volumes:
       - ./config/config-node1.xml:/etc/clickhouse-server/config.d/config.xml
       - ./config/users.xml:/etc/clickhouse-server/users.xml
+      - ./clickhouse-data/node1:/var/lib/clickhouse  # <-- Added data directory
       - ./clickhouse-logs/node1:/var/log/clickhouse-server  # <-- Added logs directory
     environment:
       CLICKHOUSE_DB: dbre
@@ -56,6 +57,7 @@ services:
     volumes:
       - ./config/config-node2.xml:/etc/clickhouse-server/config.d/config.xml
       - ./config/users.xml:/etc/clickhouse-server/users.xml
+      - ./clickhouse-data/node2:/var/lib/clickhouse  # <-- Added data directory
       - ./clickhouse-logs/node2:/var/log/clickhouse-server  # <-- Added logs directory
     environment:
       CLICKHOUSE_DB: dbre
