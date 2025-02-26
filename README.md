@@ -8,15 +8,23 @@ This repository contains configuration files and scripts to set up a ClickHouse 
 .
 ├── config/
 │   ├── config-node1.xml    # Configuration for ClickHouse node1
-│   └── config-node2.xml    # Configuration for ClickHouse node2
+│   ├── config-node2.xml    # Configuration for ClickHouse node2
+│   └── users.xml           # User configuration for ClickHouse
 ├── drivers/
 │   └── clickhouse-jdbc-0.4.6-all.jar   # JDBC driver for ClickHouse
 ├── sql/
 │   ├── V1__init.sql        # Initial schema setup
-│   └── V2__update.sql      # Schema updates
+│   ├── V2__update.sql      # Schema updates
+│   ├── V3__create_test_table.sql  # SQL for creating a test table
+│   └── V4__insert_test_table.sql  # SQL for inserting data into the test table
 ├── docker-compose.yaml     # Docker Compose configuration
 ├── README.md               # This file
-└── .gitignore              # Git ignore file
+├── .gitignore              # Git ignore file
+├── rebuild-deployment.sh   # Script for rebuilding the deployment
+├── zk-data/                # Zookeeper data directory
+└── clickhouse-logs/        # ClickHouse logs directory
+    ├── node1               # Logs for ClickHouse node1
+    └── node2               # Logs for ClickHouse node2
 ```
 
 ## Prerequisites
@@ -28,13 +36,13 @@ This repository contains configuration files and scripts to set up a ClickHouse 
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/clickhouse-cluster.git
-   cd clickhouse-cluster
+   git clone https://github.com/sjksingh/dbre-clickhouse.git
+   cd dbre-clickhouse
    ```
 
 2. Start the ClickHouse cluster:
    ```bash
-   docker-compose up -d
+   rebuild-deployment.sh
    ```
 
 3. Verify the cluster is running:
@@ -44,11 +52,18 @@ This repository contains configuration files and scripts to set up a ClickHouse 
 
 4. Connect to the ClickHouse cluster:
    ```bash
-   # Connect to node1
-   docker exec -it node1-1 clickhouse-client --host node1 --port 9000
+   # Connect to node1 using default user
+   docker exec -it dbre-clickhouse-node1-1 clickhouse-client --host node1
    
-   # Connect to node2
-   docker exec -it node2-1 clickhouse-client --host node2 --port 9000
+   # Connect to node2 using default user
+   docker exec -it dbre-clickhouse-node2-1 clickhouse-client --host node1
+
+   #Connect to node1 using dbre user
+   docker exec -it dbre-clickhouse-node1-1 clickhouse-client --host node1 --port 9000 --user dbre --password dbre123
+
+   #Connect to node2 using dbre user
+   docker exec -it dbre-clickhouse-node2-1 clickhouse-client --host node1 --port 9000 --user dbre --password dbre123
+   
    ```
 
 ## Configuration
@@ -71,18 +86,22 @@ To manually trigger migrations:
 docker-compose up flyway
 ```
 
+
 ## Troubleshooting
 
 ### Common Issues
 
 1. **Replica already exists error**:
-   This can happen if ZooKeeper already has data from a previous deployment. Clean up with:
+   This can happen if ZooKeeper already has data from a previous deployment. Clean up with: 
    ```bash
-   docker-compose down -v
+   rebuild-deployment.sh
    ```
 
-2. **Connection issues**:
-   Make sure ports are not already in use on your host system.
+2. ** To see logs:
+   docker-compose  logs flyway
+   docker logs dbre-clickhouse-node1-1 --tail 50
+   docker logs dbre-clickhouse-node2-1 --tail 50
+   dbre-clickhouse/clickhouse-logs - has logs for both nodes.
 
 ## License
 
