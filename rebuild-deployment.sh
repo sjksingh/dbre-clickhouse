@@ -9,11 +9,14 @@ CURRENT_USER=$(whoami)
 echo "Stopping and cleaning up existing containers and volumes..."
 docker-compose down -v
 
-echo "Cleaning up old ZooKeeper and ClickHouse logs..."
-sudo rm -rf zk-data clickhouse-logs
+echo "Cleaning up old ZooKeeper, data and ClickHouse logs..."
+sudo rm -rf zk-data clickhouse-data clickhouse-logs
+
+
 
 echo "Creating fresh directories..."
 sudo mkdir -p ./zk-data/zk1/logs ./zk-data/zk2/logs
+sudo mkdir -p ./clickhouse-data/node1 ./clickhouse-data/node2
 sudo mkdir -p ./clickhouse-logs/node1 ./clickhouse-logs/node2
 
 echo "Starting up ZooKeeper first..."
@@ -36,6 +39,7 @@ docker-compose up -d node1 node2
 echo "Fixing permissions..."
 sudo chown -R "$CURRENT_USER":"$CURRENT_USER" ./clickhouse-logs
 sudo chown -R "$CURRENT_USER":"$CURRENT_USER" ./zk-data
+sudo chown -R "$CURRENT_USER":"$CURRENT_USER" ./clickhouse-data
 
 
 echo "Starting Flyway Migration container "
