@@ -98,11 +98,12 @@ docker-compose up flyway
    ```
 
 2. ** To see logs:
-   docker-compose  logs flyway
-   docker logs dbre-clickhouse-node1-1 --tail 50
-   docker logs dbre-clickhouse-node2-1 --tail 50
-   dbre-clickhouse/clickhouse-logs - has logs for both nodes.
-
+  ```bash
+  docker-compose  logs flyway
+  docker logs dbre-clickhouse-node1-1 --tail 50
+  docker logs dbre-clickhouse-node2-1 --tail 50
+  dbre-clickhouse/clickhouse-logs - has logs for both nodes.
+```
 ## License
 
 [MIT](LICENSE)
