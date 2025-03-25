@@ -56,7 +56,7 @@ This repository contains configuration files and scripts to set up a ClickHouse 
    docker exec -it dbre-clickhouse-node1-1 clickhouse-client --host node1
    
    # Connect to node2 using default user
-   docker exec -it dbre-clickhouse-node2-1 clickhouse-client --host node1
+   docker exec -it dbre-clickhouse-node2-1 clickhouse-client --host node2
 
    #Connect to node1 using dbre user
    docker exec -it dbre-clickhouse-node1-1 clickhouse-client --host node1 --port 9000 --user dbre --password dbre123
